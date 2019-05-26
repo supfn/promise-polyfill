@@ -37,6 +37,6 @@ npm run test-aplus
 npm run test-es6
 ```
 
-## Promise/A+ 规范翻译
+## Promise/A+ 规范
 
-[Promise/A+ 规范](https://github.com/supfn/promise-polyfill/blob/master/doc/promise-introduction.md)
+[Promise/A+ 规范翻译](https://github.com/supfn/promise-polyfill/blob/master/doc/promise-aplus.md)

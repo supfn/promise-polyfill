@@ -22,6 +22,7 @@ class Promise {
   _resolve(value) {
     if (this._status !== STATUS.PENDING) return;
     if (value instanceof Promise) {
+      // 规范2.3.4，鼓励检测无限递归，抛出的异常与 ES6 原生 Promise 保持一致
       if (value === this) throw TypeError("chaining cycle detected for promise");
       return value.then(this._resolve.bind(this), this._reject.bind(this));
     }
@@ -125,10 +126,10 @@ class Promise {
     return this.then(null, onRejected);
   }
 
-  finally(callback) {
+  finally(cb) {
     return this.then(
-      value => Promise.resolve(callback()).then(() => value),
-      reason => Promise.resolve(callback()).then(() => {
+      value => Promise.resolve(cb()).then(() => value),
+      reason => Promise.resolve(cb()).then(() => {
         throw reason;
       })
     );
@@ -164,10 +165,6 @@ class Promise {
     }
     return new Promise((resolve, reject) => {
       iterable.forEach(p => {
-        if (p instanceof Promise) {
-          p.then(resolve, reject);
-          return;
-        }
         Promise.resolve(p).then(resolve, reject);
       });
     });
@@ -185,22 +182,18 @@ class Promise {
     }
     return new Promise((resolve, reject) => {
       let length = iterable.length;
-      iterable.forEach(handle);
-
-      function handle(v, i) {
+      iterable.forEach((v, i) => {
         try {
-          if (v instanceof Promise) {
-            v.then(value => handle(value, i), reject);
-            return;
-          }
-          iterable[i] = v;
-          if (--length === 0) {
-            resolve(iterable);
-          }
+          Promise.resolve(v).then(value => {
+            iterable[i] = value;
+            if (--length === 0) {
+              resolve(iterable);
+            }
+          }, reject);
         } catch (e) {
           reject(e);
         }
-      }
+      });
     });
   }
 
