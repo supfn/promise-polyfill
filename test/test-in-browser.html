@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Promise</title>
+</head>
+<body>
+<script src="../dist/index.js"></script>
+
+<script>
+  window.onload = () => {
+    setTimeout(() => console.log('timer'), 0);
+    console.log('code start');
+    console.log(Promise);
+    Promise.resolve('promise1').then(value => Promise.resolve(value)).then(console.log);
+    Promise.resolve('promise2').then(value => console.log(value));
+
+    new Promise((resolve, reject) => {
+      //    throw new Error("i am sss err ...");
+      //        a++;
+      setTimeout(() => {
+        console.log('1 setTimeout log before resolve ');
+        resolve(10);
+      }, 1000);
+
+      setTimeout(() => {
+        console.log('2 setTimeout log before reject ');
+        // reject("reject reason");
+        // resolve("resolve value");
+        Math.random() > 0.5 ? reject("reject reason") : resolve("resolve value");
+      }, 400);
+    })
+      .then(v => console.log('3 then:', v))
+      .catch(e => console.log('4 catch:', e))
+      .finally(() => console.log("5 finally do it , never give up!"));
+
+    console.log('code end');
+  }
+</script>
+</body>
+</html>
