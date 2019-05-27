@@ -39,6 +39,10 @@ class Promise {
     this._reason = reason;
     nextTick(() => {
       this._onRejecteds.forEach(onRejected => onRejected(reason));
+      // 对于 promise 链末端抛异常，却未捕获的情况，可以在此处理，同 ES6 原生 Promise
+      // if (!this._onRejecteds.length) {
+      //   console.error('Uncaught (in promise)', reason);
+      // }
     });
   }
 
@@ -77,20 +81,22 @@ class Promise {
       if (this._status === STATUS.REJECTED) {
         nextTick(() => onRejectedWrapped(this._reason));
       }
-
     });
     return promise2;
   }
 
   _resolutionProcedure(promise2, x, resolve, reject) {
+    // 规范 2.3.1，感觉这条规范定义有误, promise2 是在 then 中创建的，唯一一份引用也在 then 中，别处根本无从获得 promise2，
+    // 所以在此不必做 promise2 === x 恒等判断。不知是自己实现有偏差，还是有其他边界情况没考虑。
     if (promise2 === x) {
       throw new TypeError('promise2 === x is not allowed');
     }
-    // 这段可以不要，下面的 then.call 就有这个作用了，规范2.3.2上有，就先放着
-    // if (x instanceof Promise) {
-    //   x.then(y => this._resolutionProcedure(promise2, y, resolve, reject), reject);
-    //   return;
-    // }
+
+    // 规范2.3.2上，实际下面的 then.call 判断逻辑其实已经覆盖了这段逻辑，按照规范实现的 Promise 必然是 thenable
+    if (x instanceof Promise) {
+      x.then(y => this._resolutionProcedure(promise2, y, resolve, reject), reject);
+      return;
+    }
 
     if (x && typeof x === 'object' || typeof x === 'function') {
       let promiseHandled = false;
