@@ -6,6 +6,10 @@ class Promise {
     if (typeof executor !== 'function') {
       throw TypeError(`Promise constructor argument ${executor} is not a function`);
     }
+    // ES6原生的Promise构造函数中，若不通过`new`调用Promise的构造函数，会抛出TypeError异常。此处与其一致
+    if (!(this instanceof Promise)) {
+      throw new TypeError('TypeError: undefined is not a promise');
+    }
     this._status = STATUS.PENDING;
     this._value = null;
     this._reason = null;
@@ -22,7 +26,7 @@ class Promise {
   _resolve(value) {
     if (this._status !== STATUS.PENDING) return;
     if (value instanceof Promise) {
-      // 规范2.3.4，鼓励检测无限递归，抛出的异常与 ES6 原生 Promise 保持一致
+      // 检测到无限递归，抛出的异常与 ES6 原生 Promise 保持一致
       if (value === this) throw TypeError("chaining cycle detected for promise");
       return value.then(this._resolve.bind(this), this._reject.bind(this));
     }
@@ -86,13 +90,12 @@ class Promise {
   }
 
   _resolutionProcedure(promise2, x, resolve, reject) {
-    // 规范 2.3.1，感觉这条规范定义有误, promise2 是在 then 中创建的，唯一一份引用也在 then 中，别处根本无从获得 promise2，
-    // 所以在此不必做 promise2 === x 恒等判断。不知是自己实现有偏差，还是有其他边界情况没考虑。
+    // 检测到无限递归，抛出的异常与 ES6 原生 Promise 保持一致
     if (promise2 === x) {
-      throw new TypeError('promise2 === x is not allowed');
+      throw TypeError("chaining cycle detected for promise");
     }
 
-    // 规范2.3.2上，实际下面的 then.call 判断逻辑其实已经覆盖了这段逻辑，按照规范实现的 Promise 必然是 thenable
+    // 规范2.3.2，实际下面的 then.call 判断逻辑其实已经覆盖了这段逻辑，按照规范实现的 Promise 必然是 thenable
     if (x instanceof Promise) {
       x.then(y => this._resolutionProcedure(promise2, y, resolve, reject), reject);
       return;
