@@ -8,9 +8,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "promises-es6-tests test/adapter && promises-aplus-tests test/adapter",
-    "test-es6": "promises-es6-tests test/adapter",
+    "test": "npm run test-aplus && npm run test-es6",
     "test-aplus": "promises-aplus-tests test/adapter",
+    "test-es6": "promises-es6-tests test/adapter",
+    "test:cover": "istanbul cover promises-aplus-tests test/adapter && istanbul cover promises-es6-tests test/adapter",
+    "coverage": "cat ./coverage/lcov.info | coveralls",
     "build": "webpack --config ./build/webpack.config.js --mode production"
   },
   "repository": {
@@ -24,10 +26,28 @@
   },
   "homepage": "https://github.com/supfn/promise-polyfill#readme",
   "devDependencies": {
+    "@commitlint/cli": "^8.0.0",
+    "@commitlint/config-conventional": "^8.0.0",
+    "coveralls": "^3.0.4",
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "husky": "^2.4.1",
+    "istanbul": "^0.4.5",
+    "lint-staged": "^8.2.1",
     "mocha": "^6.1.4",
     "promises-aplus-tests": "^2.1.2",
     "promises-es6-tests": "^0.5.0",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }

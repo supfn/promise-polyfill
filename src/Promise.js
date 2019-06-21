@@ -1,8 +1,8 @@
 const STATUS = require('./util/status');
-const nextTick = require("./util/nextTick");
+const nextTick = require('./util/nextTick');
 
 class Promise {
-  constructor(executor) {
+  constructor (executor) {
     if (typeof executor !== 'function') {
       throw TypeError(`Promise constructor argument ${executor} is not a function`);
     }
@@ -23,11 +23,11 @@ class Promise {
     }
   }
 
-  _resolve(value) {
+  _resolve (value) {
     if (this._status !== STATUS.PENDING) return;
     if (value instanceof Promise) {
       // 检测到无限递归，抛出的异常与 ES6 原生 Promise 保持一致
-      if (value === this) throw TypeError("chaining cycle detected for promise");
+      if (value === this) throw TypeError('chaining cycle detected for promise');
       return value.then(this._resolve.bind(this), this._reject.bind(this));
     }
     this._status = STATUS.FULFILLED;
@@ -37,7 +37,7 @@ class Promise {
     });
   }
 
-  _reject(reason) {
+  _reject (reason) {
     if (this._status !== STATUS.PENDING) return;
     this._status = STATUS.REJECTED;
     this._reason = reason;
@@ -50,7 +50,7 @@ class Promise {
     });
   }
 
-  then(onFulfilled, onRejected) {
+  then (onFulfilled, onRejected) {
     if (this.constructor !== Promise && !Promise.isPrototypeOf(this.constructor)) {
       throw TypeError('incorrect-subclassing');
     }
@@ -89,10 +89,10 @@ class Promise {
     return promise2;
   }
 
-  _resolutionProcedure(promise2, x, resolve, reject) {
+  _resolutionProcedure (promise2, x, resolve, reject) {
     // 检测到无限递归，抛出的异常与 ES6 原生 Promise 保持一致
     if (promise2 === x) {
-      throw TypeError("chaining cycle detected for promise");
+      throw TypeError('chaining cycle detected for promise');
     }
 
     // 规范2.3.2，实际下面的 then.call 判断逻辑其实已经覆盖了这段逻辑，按照规范实现的 Promise 必然是 thenable
@@ -101,7 +101,7 @@ class Promise {
       return;
     }
 
-    if (x && typeof x === 'object' || typeof x === 'function') {
+    if (x && (typeof x === 'object' || typeof x === 'function')) {
       let promiseHandled = false;
       try {
         let then = x.then;
@@ -131,11 +131,11 @@ class Promise {
     }
   }
 
-  catch(onRejected) {
+  catch (onRejected) {
     return this.then(null, onRejected);
   }
 
-  finally(cb) {
+  finally (cb) {
     return this.then(
       value => Promise.resolve(cb()).then(() => value),
       reason => Promise.resolve(cb()).then(() => {
@@ -144,7 +144,7 @@ class Promise {
     );
   }
 
-  static resolve(value) {
+  static resolve (value) {
     if (this !== Promise && !Promise.isPrototypeOf(this)) {
       throw TypeError('incorrect-subclassing');
     }
@@ -152,16 +152,16 @@ class Promise {
       return value;
     }
     return new Promise(resolve => resolve(value));
-  };
+  }
 
-  static reject(reason) {
+  static reject (reason) {
     if (this !== Promise && !Promise.isPrototypeOf(this)) {
       throw TypeError('incorrect-subclassing');
     }
     return new Promise((resolve, reject) => reject(reason));
   }
 
-  static race(iterable) {
+  static race (iterable) {
     if (this !== Promise && !Promise.isPrototypeOf(this)) {
       throw TypeError('incorrect-subclassing');
     }
@@ -179,7 +179,7 @@ class Promise {
     });
   }
 
-  static all(iterable) {
+  static all (iterable) {
     if (this !== Promise && !Promise.isPrototypeOf(this)) {
       throw TypeError('incorrect-subclassing');
     }
@@ -206,7 +206,7 @@ class Promise {
     });
   }
 
-  static deferred() {
+  static deferred () {
     let defer = {};
     defer.promise = new Promise((resolve, reject) => {
       defer.resolve = resolve;

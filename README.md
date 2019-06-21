@@ -1,5 +1,8 @@
 # promise-polyfill
 
+[![Build Status](https://travis-ci.org/supfn/promise-polyfill.svg?branch=master)](https://travis-ci.org/supfn/promise-polyfill)
+[![Coverage Status](https://coveralls.io/repos/github/supfn/promise-polyfill/badge.svg?branch=master)](https://coveralls.io/github/supfn/promise-polyfill?branch=master)
+
 这是一个遵循 Promise/A+ 规范的 promise 实现，并参考了 ES6 提供的原生 Promise 对象实现了接口方式。
 
 ## 使用

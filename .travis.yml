@@ -1,0 +1,15 @@
+language: node_js
+
+sudo: true
+
+node_js:
+  - '6.10.0'
+  - '9.4.0'
+  - '10.15.3'
+
+script:
+  - npm test
+  - npm run test:cover
+
+after_script:
+  - npm run coverage
