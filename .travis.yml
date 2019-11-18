@@ -5,11 +5,21 @@ sudo: true
 node_js:
   - '6.10.0'
   - '9.4.0'
-  - '10.15.3'
+  - '12.13.0'
+
+services:
+  - docker
+
+before_install:
+  - npm install
 
 script:
   - npm test
   - npm run test:cover
+  - npm run build
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t supfn/promise-ployfill:latest .
+  - docker push supfn/promise-ployfill:latest
 
 after_script:
   - npm run coverage
