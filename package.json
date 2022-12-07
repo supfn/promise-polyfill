@@ -38,7 +38,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "husky": "^2.4.1",
     "istanbul": "^0.4.5",
-    "lint-staged": "^8.2.1",
+    "lint-staged": "^13.1.0",
     "mocha": "^6.1.4",
     "promises-aplus-tests": "^2.1.2",
     "promises-es6-tests": "^0.5.0",
